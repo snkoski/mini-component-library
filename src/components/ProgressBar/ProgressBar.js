@@ -32,7 +32,7 @@ const SIZES = {
     }
 };
 
-const ProgressBar = ({ value, size, width }) => {
+const ProgressBar = ({ value, size }) => {
     const styles = SIZES[size];
     return (
         <Wrapper
