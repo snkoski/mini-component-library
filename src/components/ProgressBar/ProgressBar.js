@@ -7,37 +7,47 @@ import VisuallyHidden from '../VisuallyHidden';
 
 const Wrapper = styled.div`
     background-color: ${COLORS.transparentGray15};
+    border-radius: var(--radius);
+    box-shadow: inset 0px 2px 4px ${COLORS.transparentGray35};
+    padding: var(--padding);
     width: 370px;
+`;
+
+const BarWrapper = styled.div`
+    border-radius: 4px;
+    /* Trim off corners when progress bar is near full */
+    overflow: hidden;
 `;
 
 const InnerBar = styled.div`
     background-color: ${COLORS.primary};
-    border-radius: 4px 0 0 4px;
-    height: 100%;
-    width: ${(p) => p.value}%;
-    ${(p) => p.value === 99.7 && `border-radius: 1px;`}
-    ${(p) => p.value === 99.8 && `border-radius: 2px;`}
-    ${(p) => p.value === 99.9 && `border-radius: 3px;`}
-    ${(p) => p.value === 100 && `border-radius: 4px;`}
+    height: var(--height);
+    width: var(--width);
 `;
 
-const SIZES = {
-    small: { 'border-radius': 4 + 'px', height: 8 + 'px' },
-    medium: { 'border-radius': 4 + 'px', height: 12 + 'px' },
-
+const STYLES = {
+    small: { radius: 4, height: 8, padding: 0 },
+    medium: { radius: 4, height: 12, padding: 0 },
     large: {
-        'border-radius': 8 + 'px',
-        height: 24 + 'px',
-        padding: 4 + 'px'
+        radius: 8,
+        height: 16,
+        padding: 4
     }
 };
 
 const ProgressBar = ({ value, size }) => {
-    const styles = SIZES[size];
+    const styles = STYLES[size];
+
+    if (!styles) {
+        throw new Error(`Unknown size passed to ProgressBar: ${size}`);
+    }
     return (
         <Wrapper
             role="progressbar"
-            style={styles}
+            style={{
+                '--padding': styles.padding + 'px',
+                '--radius': styles.radius + 'px'
+            }}
             value={value}
             aria-valuenow={value}
             aria-valuemin="0"
@@ -46,7 +56,15 @@ const ProgressBar = ({ value, size }) => {
             max="100"
         >
             <VisuallyHidden>{value}%</VisuallyHidden>
-            <InnerBar value={value} />
+            <BarWrapper>
+                <InnerBar
+                    value={value}
+                    style={{
+                        '--height': styles.height + 'px',
+                        '--width': value + '%'
+                    }}
+                />
+            </BarWrapper>
         </Wrapper>
     );
 };
