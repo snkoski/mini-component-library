@@ -7,15 +7,51 @@ import Icon from '../Icon';
 import VisuallyHidden from '../VisuallyHidden';
 
 const IconInput = ({ label, icon, width = 250, size, ...delegated }) => {
+    const styles = STYLES[size];
+
+    if (!styles) {
+        throw new Error(`Unknown size passed to ProgressBar: ${size}`);
+    }
+
     return (
         <Wrapper>
             <VisuallyHidden>{label}</VisuallyHidden>
-            <IconWrapper style={{ '--size': 16 + 'px' }}>
-                <Icon id={icon} size={16} strokeWidth={1} />
+            <IconWrapper style={{ '--size': styles.iconSize + 'px' }}>
+                <Icon
+                    id={icon}
+                    size={styles.iconSize}
+                    strokeWidth={styles.stroke}
+                />
             </IconWrapper>
-            <TextInput type="text" {...delegated}></TextInput>
+            <TextInput
+                type="text"
+                {...delegated}
+                style={{
+                    '--width': width + 'px',
+                    '--border-thickness': styles.borderThickness + 'px',
+                    '--height': styles.height / 16 + 'rem',
+                    '--font-size': styles.fontSize / 16 + 'rem'
+                }}
+            ></TextInput>
         </Wrapper>
     );
+};
+
+const STYLES = {
+    small: {
+        borderThickness: 1,
+        height: 24,
+        fontSize: 14,
+        iconSize: 16,
+        stroke: 1
+    },
+    large: {
+        borderThickness: 2,
+        height: 36,
+        fontSize: 18,
+        iconSize: 24,
+        stroke: 2
+    }
 };
 
 const Wrapper = styled.label`
@@ -39,13 +75,15 @@ const IconWrapper = styled.div`
 
 const TextInput = styled.input`
     /* Use rem so input height will scale with default font-size of browser */
-    height: ${24 / 16}rem;
+    height: var(--height);
+    width: var(--width);
     border: none;
-    border-bottom: 1px solid ${COLORS.black};
-    padding-left: 24px;
+    border-bottom: var(--border-thickness) solid ${COLORS.black};
+    padding-left: var(--height);
     color: inherit;
     font-weight: 700;
     outline-offset: 2px;
+    font-size: var(--font-size);
 
     &::placeholder {
         color: ${COLORS.gray500};
